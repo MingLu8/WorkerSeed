@@ -60,13 +60,17 @@ namespace WorkerSeed
                         option.ShutdownTimeout = TimeSpan.FromSeconds(20);
                     });
                     services.AddOptions();
+                    services.AddLogging();
                     services.Configure<AppConfig>(hostContext.Configuration.GetSection("AppConfig"));
                     services.AddHostedService<MyService>();
                 })
                 .ConfigureLogging((hostContext, configLogging) =>
                 {
                     configLogging.AddConfiguration(hostContext.Configuration.GetSection("Logging"));
-                    configLogging.AddConsole();
+                    configLogging.AddConsole((options) =>
+                    {
+                        options.IncludeScopes = Convert.ToBoolean(hostContext.Configuration["Logging:IncludeScopes"]);
+                    });
                     configLogging.AddApplicationInsights(hostContext.Configuration["Logging:ApplicationInsights:Instrumentationkey"]);
 
                     // Optional: Apply filters to configure LogLevel Trace or above is sent to

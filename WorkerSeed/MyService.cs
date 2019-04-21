@@ -28,9 +28,11 @@ namespace WorkerSeed
 
         private void DoWork(object state)
         {
-            Console.WriteLine("Timed Background Service is working.");
-            _logger.LogInformation("***trace  old Test Serilog info....");
-            _logger.LogError("*** trace old Test Serilog Error....");
+            using (_logger.BeginScope($"correlation id: {Guid.NewGuid():D}"))
+            {
+                _logger.LogInformation("with correlation id, info log");
+                _logger.LogError("with correlation id, error log");
+            }
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
